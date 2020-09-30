@@ -7,7 +7,7 @@
   "author": "AlfieriChou <alfierichou@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@grpc/grpc-js": "^1.1.7",
-    "@grpc/proto-loader": "^0.5.5"
+    "google-protobuf": "^3.13.0",
+    "grpc": "^1.24.3"
   }
 }
