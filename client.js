@@ -1,7 +1,7 @@
 const grpc = require('grpc')
 
-const book_service = require('./model/book_grpc_pb')
-const book = require('./model/book_pb')
+const book_service = require('./app/model/book_grpc_pb')
+const book = require('./app/model/book_pb')
 
 const client = new book_service.BookServiceClient('http://localhost:50051',  grpc.credentials.createInsecure())
 
