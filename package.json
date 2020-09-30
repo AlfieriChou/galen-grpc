@@ -1,0 +1,13 @@
+{
+  "name": "galen-grpc",
+  "version": "0.0.1",
+  "description": "galen grpc.",
+  "main": "index.js",
+  "repository": "https://github.com/AlfieriChou/galen-grpc",
+  "author": "AlfieriChou <alfierichou@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.1.7",
+    "@grpc/proto-loader": "^0.5.5"
+  }
+}
