@@ -1,9 +1,5 @@
 const { MessageResponse } = require('../model/message_pb')
 
-const books = [
-  { id: 123, title: 'A Tale of Two Cities', author: 'Charles Dickens' }
-]
-
 module.exports = class Message {
   async addMessage (call, callback) {
     const res = new MessageResponse()
