@@ -1,18 +1,20 @@
 const grpc = require('grpc')
 
-const book_service = require('./app/model/book_grpc_pb')
-const book = require('./app/model/book_pb')
+const message = require('./app/model/message_grpc_pb')
+const { MessageRequest } = require('./app/model/message_pb')
 
-const client = new book_service.BookServiceClient('http://localhost:50051',  grpc.credentials.createInsecure())
-
-const empty = new book.Empty()
+const client = new message.MessageServiceClient('localhost:50051',  grpc.credentials.createInsecure())
 
 const metadata = new grpc.Metadata()
 metadata.set('key', 'value')
 
-client.list(empty, metadata, (err, res) => {
+const params = new MessageRequest()
+  params.setMessageId('dis')
+  params.setMessageType('what')
+
+client.addMessage(params, metadata, (err, res) => {
   if (err) {
     throw err
   }
-  console.log('-->', res)
+  console.log('-->', res.toObject())
 })
