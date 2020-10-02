@@ -4,16 +4,16 @@ package message;
 
 // ---------------Message service-------------------
 
-service MessageService {
-  rpc addMessage(MessageRequest) returns (MessageResponse) {}
+service Message {
+  rpc addMessage(Request) returns (Response) {}
 }
 
-message MessageRequest {
+message Request {
   string message_id = 1;
   string message_type = 2;
 }
 
-message MessageResponse {
+message Response {
   string message_id = 1;
   string message_type = 2;
 }

@@ -6,8 +6,31 @@
   "repository": "https://github.com/AlfieriChou/galen-grpc",
   "author": "AlfieriChou <alfierichou@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "NODE_ENV=production node server.js",
+    "lint": "eslint --ext .js ./ --fix",
+    "release": "standard-version"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "dependencies": {
     "google-protobuf": "^3.13.0",
-    "grpc": "^1.24.3"
+    "grpc": "^1.24.3",
+    "lodash": "^4.17.20",
+    "read-dir-filenames": "^1.0.5"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-standard": "^3.1.0",
+    "eslint-friendly-formatter": "^4.0.1",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
+    "standard-version": "^9.0.0"
   }
 }
