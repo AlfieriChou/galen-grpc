@@ -22,17 +22,37 @@ module.exports = async () => {
         const descriptorNames = Object
           .keys(Object.getOwnPropertyDescriptors(service[`${modelName}`]))
           .filter(name => name !== 'constructor')
-        const descriptors = descriptorNames.reduce((acc, descriptorName) => ({
-          ...acc,
-          [descriptorName]: async (call, callback) => {
-            try {
-              const result = await service[`${modelName}`][descriptorName](call)
-              callback(null, result)
-            } catch (err) {
-              callback(err, null)
+        const descriptors = descriptorNames.reduce((acc, descriptorName) => {
+          const descriptor = service[`${modelName}`][descriptorName]
+          if (!(typeof descriptor === 'function')) {
+            throw new Error(`/app/service/${modelName} ${descriptorName} descriptor must be function`)
+          }
+          let func
+          if (descriptor.constructor.name === 'AsyncFunction') {
+            func = async (call, callback) => {
+              try {
+                const result = await service[`${modelName}`][descriptorName](call)
+                callback(null, result)
+              } catch (err) {
+                callback(err, null)
+              }
             }
           }
-        }), {})
+          if (descriptor.constructor.name === 'Function') {
+            func = (call, callback) => {
+              try {
+                const result = service[`${modelName}`][descriptorName](call)
+                callback(null, result)
+              } catch (err) {
+                callback(err, null)
+              }
+            }
+          }
+          return {
+            ...acc,
+            [descriptorName]: func
+          }
+        }, {})
         server.addService(handlers, descriptors)
       }
     })
