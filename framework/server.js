@@ -19,22 +19,21 @@ module.exports = async () => {
     const model = require(path.join(process.cwd(), `/app/model/${modelName}_grpc_pb`))
     Object.entries(model).forEach(([handlersName, handlers]) => {
       if (handlersName.endsWith('Service')) {
-        const classesFuncNames = Object.keys(
-          Object.getOwnPropertyDescriptors(service[`${modelName}`])
-        ).filter(name => name !== 'constructor')
-        const prototypeFuncs = classesFuncNames.reduce((acc, funcName) => ({
+        const descriptorNames = Object
+          .keys(Object.getOwnPropertyDescriptors(service[`${modelName}`]))
+          .filter(name => name !== 'constructor')
+        const descriptors = descriptorNames.reduce((acc, descriptorName) => ({
           ...acc,
-          [funcName]: (call, callback) => {
+          [descriptorName]: async (call, callback) => {
             try {
-              // TODO: support async function
-              const result = service[`${modelName}`][funcName](call)
+              const result = await service[`${modelName}`][descriptorName](call)
               callback(null, result)
             } catch (err) {
               callback(err, null)
             }
           }
         }), {})
-        server.addService(handlers, prototypeFuncs)
+        server.addService(handlers, descriptors)
       }
     })
   }, Promise.resolve())
