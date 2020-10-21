@@ -19,7 +19,22 @@ module.exports = async () => {
     const model = require(path.join(process.cwd(), `/app/model/${modelName}_grpc_pb`))
     Object.entries(model).forEach(([handlersName, handlers]) => {
       if (handlersName.endsWith('Service')) {
-        server.addService(handlers, service[`${modelName}`])
+        const classesFuncNames = Object.keys(
+          Object.getOwnPropertyDescriptors(service[`${modelName}`])
+        ).filter(name => name !== 'constructor')
+        const prototypeFuncs = classesFuncNames.reduce((acc, funcName) => ({
+          ...acc,
+          [funcName]: (call, callback) => {
+            try {
+              // TODO: support async function
+              const result = service[`${modelName}`][funcName](call)
+              callback(null, result)
+            } catch (err) {
+              callback(err, null)
+            }
+          }
+        }), {})
+        server.addService(handlers, prototypeFuncs)
       }
     })
   }, Promise.resolve())
