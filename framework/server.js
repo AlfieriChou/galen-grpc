@@ -3,6 +3,7 @@ const path = require('path')
 
 const classLoader = require('./lib/classLoader')
 const { loadProtoFilePaths } = require('./common')
+const loadPb = require('./pb')
 
 module.exports = async ({
   port = 50051,
@@ -12,6 +13,7 @@ module.exports = async ({
 }) => {
   const server = new grpc.Server()
   const service = classLoader(serviceDir)
+  const pb = await loadPb({ protoDir })
   const protoFilePaths = loadProtoFilePaths(protoDir)
   await protoFilePaths.reduce(async (promise, filepath) => {
     await promise
@@ -31,6 +33,8 @@ module.exports = async ({
           let func
           if (descriptor.constructor.name === 'AsyncFunction') {
             func = async (call, callback) => {
+              // eslint-disable-next-line no-param-reassign
+              call.pb = pb
               try {
                 const result = await service[`${modelName}`][descriptorName](call)
                 callback(null, result)
@@ -41,6 +45,8 @@ module.exports = async ({
           }
           if (descriptor.constructor.name === 'Function') {
             func = (call, callback) => {
+              // eslint-disable-next-line no-param-reassign
+              call.pb = pb
               try {
                 const result = service[`${modelName}`][descriptorName](call)
                 callback(null, result)
