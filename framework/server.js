@@ -1,18 +1,19 @@
 const grpc = require('grpc')
 const path = require('path')
-const readDirFilenames = require('read-dir-filenames')
 
 const classLoader = require('./lib/classLoader')
+const { loadProtoFilePaths } = require('./common')
 
-const { PORT = 50051 } = process.env
-
-const server = new grpc.Server()
-
-module.exports = async () => {
-  const service = classLoader(path.join(process.cwd(), '/app/service'))
-  const protoFilepaths = readDirFilenames(path.join(process.cwd(), '/app/proto'))
-
-  await protoFilepaths.reduce(async (promise, filepath) => {
+module.exports = async ({
+  port = 50051,
+  insecure = grpc.ServerCredentials.createInsecure(),
+  protoDir = path.join(process.cwd(), '/app/proto'),
+  serviceDir = path.join(process.cwd(), '/app/service')
+}) => {
+  const server = new grpc.Server()
+  const service = classLoader(serviceDir)
+  const protoFilePaths = loadProtoFilePaths(protoDir)
+  await protoFilePaths.reduce(async (promise, filepath) => {
     await promise
     const modelName = path.basename(filepath).replace(/\.\w+$/, '')
     // eslint-disable-next-line import/no-dynamic-require, global-require
@@ -58,11 +59,11 @@ module.exports = async () => {
     })
   }, Promise.resolve())
 
-  server.bindAsync(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure(), (err) => {
+  server.bindAsync(`0.0.0.0:${port}`, insecure, (err) => {
     if (err) {
       throw err
     }
-    console.log(`Server running at tcp://0.0.0.0:${PORT}`)
+    console.log(`Server running at tcp://0.0.0.0:${port}`)
   })
   return server
 }

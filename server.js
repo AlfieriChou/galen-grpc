@@ -1,7 +1,7 @@
-const initializeServer = require('./framework/server')
+const { initializeServer } = require('./framework')
 
 const run = async () => {
-  const server = await initializeServer()
+  const server = await initializeServer({})
   server.start()
 }
 

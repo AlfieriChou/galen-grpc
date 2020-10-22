@@ -8,14 +8,16 @@ gRpc server template
 
 ```javascript
 const grpc = require('grpc')
-const initializeClient = require('./framework/client')
+
+const { initializeClient, loadPb } = require('./framework')
 
 const metadata = new grpc.Metadata()
 metadata.set('key', 'value')
 
 const bootstrap = async () => {
-  const { client, params } = await initializeClient()
-  const { MessageRequest } = params.get('message')
+  const client = await initializeClient({})
+  const pb = await loadPb({})
+  const { MessageRequest } = pb.get('message')
   const request = new MessageRequest()
   request.setMessageId('dis')
   request.setMessageType('what')
@@ -34,10 +36,10 @@ bootstrap()
 * server
 
 ```javascript
-const initializeServer = require('./framework/server')
+const { initializeServer } = require('./framework')
 
 const run = async () => {
-  const server = await initializeServer()
+  const server = await initializeServer({})
   server.start()
 }
 
